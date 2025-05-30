@@ -1,0 +1,53 @@
+# This file contains the configuration for various scripts used in PhantomBuster.
+# Each script has a unique ID, a name, and a set of arguments that define its behavior.
+
+- id: 3112
+  name: LinkedIn Profile Visitor.js
+  required:
+    - spreadsheetUrl
+  arguments:
+    numberOfAddsPerLaunch: 10
+    saveImg: True
+    takeScreenshot: False
+    takePartialScreenshot: False
+    updateCrmContacts: True
+    emailChooser: none
+    scrapeRecommendations: True
+    scrapeAccomplishments: True
+    scrapeInterests: True
+    onlyCurrentJson: True
+    scrapeLicenses: True
+
+- id: 5251160215300729
+  name: LinkedIn Post Commenter and Liker Scraper.js
+  required:
+    - linkedinProfileUrl
+  arguments:
+    pushResultToCRM: False
+    inputType: linkedinProfileUrl
+    postEngagersToExtract: ['commenters', 'likers']
+    shouldOnlyRetrievePostsPublishedFromDate: False
+
+- id: 9136
+  name: LinkedIn Activity Extractor - Posts, images, articles.…
+  arguments:
+    numberOfLinesPerLaunch: 10
+    numberMaxOfPosts: 30
+    csvName: result
+    activitiesToScrape: ['Post', 'Comment', 'Reaction', 'Article', 'Event', 'Newsletter', 'Document']
+
+- id: 2880
+  name: LinkedIn Post Likers Export.js
+  required:
+    - postUrl
+  arguments:
+    numberOfPostsPerLaunch: 1
+    csvName: result
+
+- id: 9136
+  name: LinkedIn Activity Extractor.js
+  arguments:
+    numberOfLinesPerLaunch: 1
+    numberMaxOfPosts: 50
+    csvName: result
+    activitiesToScrape: ['Post']

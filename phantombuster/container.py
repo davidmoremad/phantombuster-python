@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Container(object):
 
     CONTAINERS = "containers/fetch-all?agentId={}"
@@ -17,6 +18,8 @@ class Container(object):
         """Fetch all containers for a specific agent
         Args:
             agent_id (str): Agent ID to fetch containers for
+        Returns:
+            dict: A dictionary containing all containers for the specified agent.
         """
         return self.req.get(self.CONTAINERS.format(agent_id))
 
@@ -24,6 +27,8 @@ class Container(object):
         """Fetch a specific container by ID
         Args:
             container_id (str): Container ID to fetch
+        Returns:
+            dict: A dictionary containing the container details.
         """
         return self.req.get(self.CONTAINER.format(container_id))
     
@@ -32,6 +37,8 @@ class Container(object):
         Args:
             container_id (str): Container ID to fetch output for
             raw (bool): If True, fetch raw output
+        Returns:
+            dict: A dictionary containing the container's output.
         """
         return self.req.get(self.CONTAINER_OUTPUT.format(container_id, str(raw).lower()))
     
@@ -39,5 +46,7 @@ class Container(object):
         """Fetch the results of a specific container by ID
         Args:
             container_id (str): Container ID to fetch results for
+        Returns:
+            dict: A dictionary containing the container's results.
         """
         return self.req.get(self.CONTAINER_RESULTS.format(container_id))

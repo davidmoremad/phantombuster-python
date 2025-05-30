@@ -1,16 +1,26 @@
+# -*- coding: utf-8 -*-
 class Script(object):
     
     SCRIPTS = "scripts/fetch-all"
     SCRIPT = "scripts/fetch?id={}"
 
     def __init__(self, req):
-      self.req = req
-
+        self._req = req
 
     def list(self, org_name="phantombuster"):
-        """Fetch all scripts (Phantoms)"""
-        return self.req.get(f'{self.SCRIPTS}?org={org_name}')
+        """Fetch all scripts (Phantoms)
+        Args:
+            org_name (str): Organization name to filter scripts by. Default is "phantombuster".
+        Returns:
+            dict: A dictionary containing all scripts for the specified organization.
+        """
+        return self._req.get(f'{self.SCRIPTS}?org={org_name}')
 
     def get(self, script_id):
-        """Fetch a specific script by ID"""
-        return self.req.get(self.SCRIPT.format(script_id))
+        """Fetch a specific script by ID
+        Args:
+            script_id (str): The ID of the script to fetch.
+        Returns:
+            dict: A dictionary containing the script details.
+        """
+        return self._req.get(self.SCRIPT.format(script_id))

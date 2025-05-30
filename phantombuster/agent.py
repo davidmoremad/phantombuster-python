@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import os
+from .utils import script_settings_loader
 
 class Agent(object):
 
@@ -14,17 +16,27 @@ class Agent(object):
 
 
     def list(self):
-        """Fetch all agents"""
+        """Fetch all agents
+        Returns:
+            dict: A dictionary containing all agents (Phantoms).
+        """
         return self.req.get(self.AGENTS)
 
     def get(self, agent_id):
-        """Fetch a specific agent by ID"""
+        """Fetch a specific agent by ID
+        Args:
+            agent_id (str): Agent ID to fetch
+        Returns:
+            dict: A dictionary containing the agent details.
+        """
         return self.req.get(self.AGENT.format(agent_id))
 
     def output(self, agent_id):
         """Fetch the output of a specific agent by ID
         Args:
             agent_id (str): Agent ID to fetch output for
+        Returns:
+            dict: A dictionary containing the agent's output.
         """
         return self.req.get(self.AGENT_OUTPUT.format(agent_id))
     
@@ -33,18 +45,27 @@ class Agent(object):
         Args:
             agent_id (str): Agent ID to launch
             arguments (dict): Optional arguments to send with the launch request.
+        Returns:
+            dict: A dictionary containing the response from the launch request.
         """
-        if not arguments:
-            arguments = {}
-
-        if 'sessionCookie' not in arguments:
-            # If sessionCookie is not provided, use the default one from the environment variable
-            arguments['sessionCookie'] = os.getenv('PHANTOMBUSTER_COOKIE')
-
         payload = {
             'id': agent_id,
-            'arguments': arguments
+            'arguments': {}
         }
+
+        # Load script settings for the agent
+        script_id = self.get(agent_id).get('scriptId')
+        script_settings = script_settings_loader(script_id)
+        payload['arguments'].update(script_settings.get('arguments', {}))
+        payload['arguments'].update(arguments or {})
+
+        # Ensure sessionCookie is set, either from arguments or environment variable
+        if 'sessionCookie' not in payload['arguments']:
+            payload['arguments']['sessionCookie'] = os.getenv('PHANTOMBUSTER_COOKIE')
+
+        # Raise exception if required_args are missing.
+        if not set(script_settings.get('required', [])).issubset(payload['arguments'].keys()):
+            raise ValueError(f"Missing required arguments: {script_settings['required']}")
 
         return self.req.post(self.AGENT_LAUNCH, payload=payload)
 
@@ -52,7 +73,11 @@ class Agent(object):
         """Save a specific agent (update a Phantom)
         Args:
             agent_id (str): Agent ID to save
-            payload (dict): Optional payload to send with the save request
+            organizationName (str): Organization name to associate with the agent
+            scriptName (str): Name of the script associated with the agent
+            agentName (str): Name of the agent to save
+        Returns:
+            dict: A dictionary containing the response from the save request.
         """
         payload = {}
         if agent_id:
@@ -69,8 +94,12 @@ class Agent(object):
     def update(self, agent_id=None, organizationName="phantombuster", scriptName=None, agentName=None):
         """Save a specific agent (update a Phantom)
         Args:
-            agent_id (str): Agent ID to save
-            payload (dict): Optional payload to send with the save request
+            agent_id (str): Agent ID to update
+            organizationName (str): Organization name to associate with the agent
+            scriptName (str): Name of the script associated with the agent
+            agentName (str): Name of the agent to update
+        Returns:
+            dict: A dictionary containing the response from the update request.
         """
         payload = {}
         if agent_id:
@@ -88,5 +117,7 @@ class Agent(object):
         """Delete a specific agent by ID
         Args:
             agent_id (str): Agent ID to delete
+        Returns:
+            dict: A dictionary containing the response from the delete request.
         """
         return self.req.post(self.AGENT_DELETE, payload={'id': agent_id})

@@ -1,5 +1,30 @@
 import json
+import yaml
 import requests
+import os
+
+def script_settings_loader(script_id):
+    """Load default script settings from a YAML file.
+    Args:
+        script_id (str): The ID of the script to load settings for.
+    Raises:
+        FileNotFoundError: If the configuration file is not found.
+    Returns:
+        dict: The script settings for the specified script ID, or an empty dictionary if not found.
+    """
+    try:
+        config_path = os.path.join(os.path.dirname(__file__), 'config', 'scripts.yaml')
+        with open(config_path, 'r') as file:
+            scripts = yaml.safe_load(file)
+
+        # Return script settings if script_id exists, otherwise return an empty dict
+        for script in scripts:
+            if str(script.get('id')) == str(script_id):
+                return script
+        return {}
+    except FileNotFoundError:
+        raise FileNotFoundError("Configuration file 'phantombuster/config/scripts.yaml' not found.")
+
 
 class RequestHandler(object):
     def __init__(self, endpoint, headers={}, key=None, secret=None):

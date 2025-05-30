@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class Org(object):
 
   ORG = "orgs/fetch"
@@ -5,13 +7,13 @@ class Org(object):
   ORG_AGENT_GROUPS = "orgs/fetch-agent-groups"
 
   def __init__(self, req):
-    self.req = req
+    self._req = req
 
 
   def info(self):
       """Fetch all organizations"""
-      return self.req.get(self.ORG)
-  
+      return self._req.get(self.ORG)
+
   def usage(self):
       """Fetch resources for the organization"""
-      return self.req.get(self.ORG_RESOURCES)
+      return self._req.get(self.ORG_RESOURCES)
