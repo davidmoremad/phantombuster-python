@@ -18,8 +18,6 @@ class RequestHandler(object):
                 res = requests.get(
                     url=url, params=_payload, headers=self.headers, auth=(self.key, self.secret))
             elif method == 'post':
-                print(url)
-                print(_payload)
                 res = requests.post(
                     url=url, data=_payload, headers=self.headers, auth=(self.key, self.secret))
             elif method == 'patch':
@@ -38,10 +36,12 @@ class RequestHandler(object):
         if str(res.status_code)[0] == '2':
             try:
                 if res.content:
-                    jsonObject = res.json()
+                    try:
+                        jsonObject = res.json()
+                    except json.JSONDecodeError:
+                        jsonObject = {'content': res.content.decode('utf-8')}
             except Exception as ex:
-                err = {'code': res.status_code, 'message': getattr(
-                    ex, 'message', ''), 'content': res.content}
+                err = {'code': res.status_code, 'message': getattr(ex, 'message', ''), 'content': res.content}
         else:
             err = {'code': res.status_code,
                    'message': res.reason, 'content': res.content}
