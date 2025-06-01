@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import json
+
 class Container(object):
 
     CONTAINERS = "containers/fetch-all?agentId={}"
@@ -21,7 +23,7 @@ class Container(object):
         Returns:
             dict: A dictionary containing all containers for the specified agent.
         """
-        return self.req.get(self.CONTAINERS.format(agent_id))
+        return self.req.get(self.CONTAINERS.format(agent_id))['containers']
 
     def get(self, container_id):
         """Fetch a specific container by ID
@@ -40,7 +42,7 @@ class Container(object):
         Returns:
             dict: A dictionary containing the container's output.
         """
-        return self.req.get(self.CONTAINER_OUTPUT.format(container_id, str(raw).lower()))
+        return self.req.get(self.CONTAINER_OUTPUT.format(container_id, str(raw).lower()))['output']
     
     def results(self, container_id):
         """Fetch the results of a specific container by ID
@@ -49,4 +51,8 @@ class Container(object):
         Returns:
             dict: A dictionary containing the container's results.
         """
-        return self.req.get(self.CONTAINER_RESULTS.format(container_id))
+        rsp = self.req.get(self.CONTAINER_RESULTS.format(container_id))
+        try:
+            return json.loads(rsp['resultObject']).pop()
+        except json.JSONDecodeError:
+            return rsp

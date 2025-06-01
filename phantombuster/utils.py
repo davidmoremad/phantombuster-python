@@ -64,12 +64,12 @@ class RequestHandler(object):
                     try:
                         jsonObject = res.json()
                     except json.JSONDecodeError:
-                        jsonObject = {'content': res.content.decode('utf-8')}
+                        jsonObject = {'content': res.content}
             except Exception as ex:
-                err = {'code': res.status_code, 'message': getattr(ex, 'message', ''), 'content': res.content}
+                err = {'code': res.status_code, 'message': getattr(ex, 'message', ''), 'content': json.loads(res.content)}
         else:
-            err = {'code': res.status_code,
-                   'message': res.reason, 'content': res.content}
+            # Return as dict
+            err = {'code': res.status_code, 'message': res.reason, 'content': json.loads(res.content)}
 
         if err:
             raise Exception(err)

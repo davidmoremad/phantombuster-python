@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import json
 from .utils import script_settings_loader
 
 class Agent(object):
@@ -14,6 +15,14 @@ class Agent(object):
     def __init__(self, req):
       self.req = req
 
+    def _json_to_dict(self, txt):
+        """JSON to DICT."""
+        if isinstance(txt, dict):
+            return txt
+        try:
+            return json.loads(txt)
+        except json.JSONDecodeError:
+            return {}
 
     def list(self):
         """Fetch all agents
@@ -29,7 +38,9 @@ class Agent(object):
         Returns:
             dict: A dictionary containing the agent details.
         """
-        return self.req.get(self.AGENT.format(agent_id))
+        agent = self.req.get(self.AGENT.format(agent_id))
+        agent['argument'] = self._json_to_dict(agent.get('argument', ''))
+        return agent
 
     def output(self, agent_id):
         """Fetch the output of a specific agent by ID
@@ -69,50 +80,23 @@ class Agent(object):
 
         return self.req.post(self.AGENT_LAUNCH, payload=payload)
 
-    def create(self, agent_id=None, organizationName="phantombuster", scriptName=None, agentName=None):
-        """Save a specific agent (update a Phantom)
+    def create(self, script_name, agent_name=None, org_name="phantombuster", arguments={}):
+        """Create a new agent
         Args:
-            agent_id (str): Agent ID to save
-            organizationName (str): Organization name to associate with the agent
-            scriptName (str): Name of the script associated with the agent
-            agentName (str): Name of the agent to save
+            scriptName (str): Name of the script to associate with the agent.
+            agentName (str): Name of the agent to create.
+            organizationName (str): Name of the organization that owns the script. Default is "phantombuster".
         Returns:
             dict: A dictionary containing the response from the save request.
         """
-        payload = {}
-        if agent_id:
-            payload['id'] = agent_id
-        if organizationName:
-            payload['org'] = organizationName
-        if scriptName:
-            payload['script'] = scriptName
-        if agentName:
-            payload['name'] = agentName
+        payload = {
+            'script': script_name,
+            'name': agent_name or script_name,
+            'org': org_name
+        }
 
         return self.req.post(self.AGENT_SAVE, payload=payload)
 
-    def update(self, agent_id=None, organizationName="phantombuster", scriptName=None, agentName=None):
-        """Save a specific agent (update a Phantom)
-        Args:
-            agent_id (str): Agent ID to update
-            organizationName (str): Organization name to associate with the agent
-            scriptName (str): Name of the script associated with the agent
-            agentName (str): Name of the agent to update
-        Returns:
-            dict: A dictionary containing the response from the update request.
-        """
-        payload = {}
-        if agent_id:
-            payload['id'] = agent_id
-        if organizationName:
-            payload['org'] = organizationName
-        if scriptName:
-            payload['script'] = scriptName
-        if agentName:
-            payload['name'] = agentName
-
-        return self.req.post(self.AGENT_SAVE, payload=payload)
-    
     def delete(self, agent_id):
         """Delete a specific agent by ID
         Args:

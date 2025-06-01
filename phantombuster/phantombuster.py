@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from .utils import RequestHandler
+import os
+from phantombuster.utils import RequestHandler
 from phantombuster.org import Org
 from phantombuster.script import Script
 from phantombuster.agent import Agent
@@ -21,15 +22,15 @@ class PhantomBuster(object):
 
     BASE_URL = "https://api.phantombuster.com/api/v2/"
 
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str=""):
         """Initialize PhantomBuster API client
         Args:
             api_key (str): PhantomBuster API key
         """
-        if not api_key:
-            raise ValueError("API key is required")
         
-        self._api_key = api_key
+        self._api_key = api_key or os.getenv("PHANTOMBUSTER_API_KEY")
+        if not self._api_key:
+            raise ValueError("API key is required. Please provide it as an argument or set the PHANTOMBUSTER_API_KEY environment variable.")
         self._headers = {
             "X-Phantombuster-Key-1": self._api_key,
             "Content-Type": "application/json"
