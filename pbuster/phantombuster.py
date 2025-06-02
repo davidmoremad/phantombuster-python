@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
-from phantombuster.utils import RequestHandler
-from phantombuster.org import Org
-from phantombuster.script import Script
-from phantombuster.agent import Agent
-from phantombuster.container import Container
+from pbuster.utils import RequestHandler
+from pbuster.org import Org
+from pbuster.script import Script
+from pbuster.agent import Agent
+from pbuster.container import Container
 
 class PhantomBuster(object):
     """

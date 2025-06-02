@@ -6,7 +6,7 @@ import functools
 from datetime import datetime
 from rich.console import Console
 from rich.table import Table
-from phantombuster.phantombuster import PhantomBuster
+from pbuster.phantombuster import PhantomBuster
 from dotenv import load_dotenv
 
 load_dotenv()
