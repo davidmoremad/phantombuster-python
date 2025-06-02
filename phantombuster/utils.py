@@ -1,7 +1,7 @@
+import os
 import json
 import yaml
 import requests
-import os
 
 def script_settings_loader(script_id):
     """Load default script settings from a YAML file.
