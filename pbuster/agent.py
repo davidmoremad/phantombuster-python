@@ -41,6 +41,16 @@ class Agent(object):
         agent = self.req.get(self.AGENT.format(agent_id))
         agent['argument'] = self._json_to_dict(agent.get('argument', ''))
         return agent
+    
+    def status(self, agent_id):
+        """Fetch the status of a specific agent by ID
+        Args:
+            agent_id (str): Agent ID to fetch status for
+        Returns:
+            str: The last end type of the agent, indicating its status.
+        """
+        return self.req.get(self.AGENT.format(agent_id)).get('lastEndType', "")
+
 
     def output(self, agent_id):
         """Fetch the output of a specific agent by ID

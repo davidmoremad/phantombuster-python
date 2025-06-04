@@ -24,3 +24,14 @@ class Script(object):
             dict: A dictionary containing the script details.
         """
         return self._req.get(self.SCRIPT.format(script_id))
+    
+
+    def get_args(self, script_id):
+        """Fetch the arguments of a specific script by ID
+        Args:
+            script_id (str): The ID of the script to fetch arguments for.
+        Returns:
+            dict: A dictionary containing the script's arguments.
+        """
+        script = self.get(script_id)
+        return script.get('argumentTypes', {})
