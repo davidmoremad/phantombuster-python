@@ -1,0 +1,26 @@
+site_name: "PhantomBuster Python Documentation"
+site_url: https://phantombuster-python.readthedocs.io/
+repo_url: https://github.com/amrani/phantombuster-python
+site_author: "David Amrani Hernandez"
+
+theme:
+  name: readthedocs
+  features:
+    - navigation.tabs
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            heading_level: 3
+            members_order: source
+            merge_init_into_class: true
+            show_bases: false
+            show_if_no_docstring: false
+            show_root_full_path: true
+            show_root_heading: true
+            show_source: false
+            show_submodules: false

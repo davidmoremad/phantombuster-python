@@ -26,17 +26,20 @@ class Agent(object):
 
     def list(self):
         """Fetch all agents
+        
         Returns:
-            dict: A dictionary containing all agents (Phantoms).
+            (dict): A dictionary containing all agents (Phantoms).
         """
         return self.req.get(self.AGENTS)
 
     def get(self, agent_id):
         """Fetch a specific agent by ID
+
         Args:
             agent_id (str): Agent ID to fetch
+
         Returns:
-            dict: A dictionary containing the agent details.
+            (dict): A dictionary containing the agent details.
         """
         agent = self.req.get(self.AGENT.format(agent_id))
         agent['argument'] = self._json_to_dict(agent.get('argument', ''))
@@ -44,30 +47,36 @@ class Agent(object):
     
     def status(self, agent_id):
         """Fetch the status of a specific agent by ID
+
         Args:
             agent_id (str): Agent ID to fetch status for
+        
         Returns:
-            str: The last end type of the agent, indicating its status.
+            (str): The last end type of the agent, indicating its status.
         """
         return self.req.get(self.AGENT.format(agent_id)).get('lastEndType', "")
 
 
     def output(self, agent_id):
         """Fetch the output of a specific agent by ID
+        
         Args:
             agent_id (str): Agent ID to fetch output for
+        
         Returns:
-            dict: A dictionary containing the agent's output.
+            (dict): A dictionary containing the agent's output.
         """
         return self.req.get(self.AGENT_OUTPUT.format(agent_id))
     
     def run(self, agent_id, arguments=None):
         """Launch a specific agent (run a Phantom)
+        
         Args:
             agent_id (str): Agent ID to launch
             arguments (dict): Optional arguments to send with the launch request.
+        
         Returns:
-            dict: A dictionary containing the response from the launch request.
+            (dict): A dictionary containing the response from the launch request.
         """
         payload = {
             'id': agent_id,
@@ -92,12 +101,15 @@ class Agent(object):
 
     def create(self, script_name, agent_name=None, org_name="phantombuster", arguments={}):
         """Create a new agent
+        
         Args:
-            scriptName (str): Name of the script to associate with the agent.
-            agentName (str): Name of the agent to create.
-            organizationName (str): Name of the organization that owns the script. Default is "phantombuster".
+            script_name (str): Name of the script to associate with the agent.
+            agent_name (str): Name of the agent to create.
+            org_name (str): Name of the organization that owns the script. Default is "phantombuster".
+            arguments (dict): Optional arguments to send with the agent creation request.
+        
         Returns:
-            dict: A dictionary containing the response from the save request.
+            (dict): A dictionary containing the response from the save request.
         """
         payload = {
             'script': script_name,
@@ -109,9 +121,11 @@ class Agent(object):
 
     def delete(self, agent_id):
         """Delete a specific agent by ID
+        
         Args:
             agent_id (str): Agent ID to delete
+        
         Returns:
-            dict: A dictionary containing the response from the delete request.
+            (dict): A dictionary containing the response from the delete request.
         """
         return self.req.post(self.AGENT_DELETE, payload={'id': agent_id})

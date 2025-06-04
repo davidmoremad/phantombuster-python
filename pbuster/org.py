@@ -11,9 +11,16 @@ class Org(object):
 
 
   def info(self):
-      """Fetch all organizations"""
+      """Fetch all organizations
+      
+      Returns:
+          (dict): A dictionary containing information about the organization."""
       return self._req.get(self.ORG)
 
   def usage(self):
-      """Fetch resources for the organization"""
+      """Fetch resources for the organization
+      
+      Returns:
+          (dict): A dictionary containing the resources used by the organization.
+      """
       return self._req.get(self.ORG_RESOURCES)

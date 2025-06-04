@@ -11,6 +11,7 @@ class PhantomBuster(object):
     PhantomBuster API client for interacting with PhantomBuster services.
     This class provides methods to manage scripts, agents, and organizations
     using the PhantomBuster API.
+    
     Attributes:
         apikey (str): PhantomBuster API key
         headers (dict): Headers for API requests
@@ -24,8 +25,12 @@ class PhantomBuster(object):
 
     def __init__(self, api_key: str=""):
         """Initialize PhantomBuster API client
+        
         Args:
             api_key (str): PhantomBuster API key
+
+        Raises:
+            ValueError: If API key is not provided or not found in environment variables.
         """
         
         self._api_key = api_key or os.getenv("PHANTOMBUSTER_API_KEY")
