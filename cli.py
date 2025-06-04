@@ -40,7 +40,6 @@ def usage():
 # --------------------- AGENT COMMANDS ---------------------
 # ----------------------------------------------------------
 
-# CLI command group for agent management. If empty, returns list of agents.
 @cli.group()
 def agent():
     pass
@@ -84,6 +83,20 @@ def agent_show(agent_id, debug):
             value = json.dumps(value)
         table.add_row(key, str(value))
     console.print(table) if not debug else console.print(agent)
+
+
+@agent.command(name='status')
+@click.argument('agent_id')
+@click.option('--debug', '-d', default=False, is_flag=True, help='Enable debug mode to print raw agent data.')
+def agent_status(agent_id, debug):
+    try:
+        status = pb.agent.status(agent_id) # Finished, Running, Error, etc.
+        if not debug:
+            console.print(f"[+] Agent {agent_id} status: {status}", style="green")
+        else:
+            console.print({"status": status})
+    except Exception as e:
+        console.print(f"[X] {e.args[0].get('content').get('error')}", style="red")
 
 
 @agent.command(name='create')
@@ -199,6 +212,28 @@ def script_show(script_id, debug):
     else:
         console.print(script)
 
+
+@script.command(name='args')
+@click.argument('script_id')
+@click.option('--debug', '-d', default=False, is_flag=True, help='Enable debug mode to print raw agent data.')
+def script_args(script_id, debug):
+    try:
+        args = pb.script.get_args(script_id)
+        if not debug:
+            table = Table()
+            table.add_column("Key", style="white")
+            table.add_column("Value", style="magenta", width=80)
+            for key, value in args.items():
+                if isinstance(value, dict):
+                    value = json.dumps(value, indent=2)
+                elif isinstance(value, list):
+                    value = json.dumps(value)
+                table.add_row(key, str(value))
+            console.print(table)
+        else:
+            console.print(args)
+    except Exception as e:
+        console.print(f"[X] {e.args[0].get('content').get('error')}", style="red")
 
 # ---------------------- CONTAINER COMMANDS -------------------
 # ------------------------------------------------------------
