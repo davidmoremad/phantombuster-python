@@ -25,7 +25,7 @@ class Agent(object):
             return {}
 
     def list(self):
-        """Fetch all agents
+        """Fetch all agents (Phantoms)
         
         Returns:
             (dict): A dictionary containing all agents (Phantoms).
@@ -46,13 +46,13 @@ class Agent(object):
         return agent
     
     def status(self, agent_id):
-        """Fetch the status of a specific agent by ID
+        """Fetch the status of the last execution of a specific agent by ID
 
         Args:
             agent_id (str): Agent ID to fetch status for
         
         Returns:
-            (str): The last end type of the agent, indicating its status.
+            (str): Status of the last agent execution. [`finished` `killed` `global timeout` `org timeout` `agent timeout` `unknown` `no log timeout`]
         """
         return self.req.get(self.AGENT.format(agent_id)).get('lastEndType', "")
 
@@ -68,15 +68,15 @@ class Agent(object):
         """
         return self.req.get(self.AGENT_OUTPUT.format(agent_id))
     
-    def run(self, agent_id, arguments=None):
-        """Launch a specific agent (run a Phantom)
+    def launch(self, agent_id, arguments=None):
+        """Run a specific agent.
         
         Args:
             agent_id (str): Agent ID to launch
-            arguments (dict): Optional arguments to send with the launch request.
+            arguments (dict): Arguments to send with the launch request. Some are required, depending on the script.
         
         Returns:
-            (dict): A dictionary containing the response from the launch request.
+            (dict): A dictionary containing the response with the container ID of the launched agent.
         """
         payload = {
             'id': agent_id,
@@ -109,7 +109,7 @@ class Agent(object):
             arguments (dict): Optional arguments to send with the agent creation request.
         
         Returns:
-            (dict): A dictionary containing the response from the save request.
+            (dict): ID of the created agent.
         """
         payload = {
             'script': script_name,

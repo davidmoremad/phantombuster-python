@@ -30,7 +30,7 @@ class Script(object):
         return self._req.get(self.SCRIPT.format(script_id))
 
 
-    def get_args(self, script_id):
+    def args(self, script_id):
         """Fetch the arguments of a specific script by ID
         
         Args:

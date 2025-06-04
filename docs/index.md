@@ -17,12 +17,12 @@ pip install pbuster
 
 ```python
 from pbuster import PhantomBuster
+
 pb = PhantomBuster("YOUR_API_KEY")
 
-# Get your agents
+# Get agents
 agents = pb.agents.list()
 
-# Print the names and IDs of your agents
 for agent in agents:
     print(f'Agent {agent.get("name")} has ID {agent.get("id")}')
 ```
@@ -31,7 +31,7 @@ for agent in agents:
 
 ## Documentation
 
-* [Organizations](organizations.md)
+* [Organizations](org.md)
 * [Agents](agents.md)
 * [Scripts](scripts.md)
 * [Containers](containers.md)
