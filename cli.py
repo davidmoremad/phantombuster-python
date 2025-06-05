@@ -218,7 +218,7 @@ def script_show(script_id, debug):
 @click.option('--debug', '-d', default=False, is_flag=True, help='Enable debug mode to print raw agent data.')
 def script_args(script_id, debug):
     try:
-        args = pb.script.get_args(script_id)
+        args = pb.script.args(script_id)
         if not debug:
             table = Table()
             table.add_column("Key", style="white")
