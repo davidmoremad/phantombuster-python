@@ -2,6 +2,7 @@
 import os
 import json
 from .utils import script_settings_loader
+from pbuster.container import Container
 
 class Agent(object):
 
@@ -11,6 +12,8 @@ class Agent(object):
     AGENT_LAUNCH = "agents/launch"
     AGENT_SAVE = "agents/save"
     AGENT_DELETE = "agents/delete"
+
+    WAIT_TIME = 2  # seconds
 
     def __init__(self, req):
       self.req = req
@@ -98,6 +101,35 @@ class Agent(object):
             raise ValueError(f"Missing required arguments: {script_settings['required']}")
 
         return self.req.post(self.AGENT_LAUNCH, payload=payload)
+
+    def launch_and_wait(self, agent_id, arguments=None):
+        """Run a specific agent and wait for it to finish and get results
+        
+        Args:
+            agent_id (str): Agent ID to launch
+            arguments (dict): Arguments to send with the launch request. Some are required, depending on the script.
+        
+        Returns:
+            (tuple): A tuple containing the container ID and the results of the agent execution.
+        """
+        # 1. Run the agent
+        pb_container = Container(self.req)
+        response = self.launch(agent_id, arguments)
+        container_id = response.get('containerId')
+        
+        if not container_id:
+            raise ValueError("Failed to launch agent: No container ID returned.")
+        
+        # 2. Wait for completion
+        container = pb_container.wait(container_id)
+
+        # 3. Error handling
+        if container.get('exitCode') != 0:
+            raise ValueError(f"Agent failed. Container {container_id} got exit code {container.get('exitCode')}.")
+        if container.get('exitCode') == 0 and not container.get('resultObject'):
+            raise ValueError(f"Agent {agent_id} did not return any output.\nRuntime events: {', '.join([event.get('text') for event in container.get('runtimeEvents', [])])}\n")
+        
+        return container
 
     def create(self, script_name, agent_name=None, org_name="phantombuster", arguments={}):
         """Create a new agent

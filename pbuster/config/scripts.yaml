@@ -6,48 +6,30 @@
   required:
     - spreadsheetUrl
   arguments:
-    numberOfAddsPerLaunch: 10
-    saveImg: True
-    takeScreenshot: False
-    takePartialScreenshot: False
-    updateCrmContacts: True
-    emailChooser: none
-    scrapeRecommendations: True
-    scrapeAccomplishments: True
-    scrapeInterests: True
-    onlyCurrentJson: True
-    scrapeLicenses: True
-
-- id: 5251160215300729
-  name: LinkedIn Post Commenter and Liker Scraper.js
-  required:
-    - linkedinProfileUrl
-  arguments:
-    pushResultToCRM: False
-    inputType: linkedinProfileUrl
-    postEngagersToExtract: ['commenters', 'likers']
-    shouldOnlyRetrievePostsPublishedFromDate: False
-
-- id: 9136
-  name: LinkedIn Activity Extractor - Posts, images, articles.…
-  arguments:
-    numberOfLinesPerLaunch: 10
-    numberMaxOfPosts: 30
-    csvName: result
-    activitiesToScrape: ['Post', 'Comment', 'Reaction', 'Article', 'Event', 'Newsletter', 'Document']
-
-- id: 2880
-  name: LinkedIn Post Likers Export.js
-  required:
-    - postUrl
-  arguments:
-    numberOfPostsPerLaunch: 1
-    csvName: result
+    numberOfAddsPerLaunch: 10       # Number of profiles to visit per launch
+    saveImg: True                   # Save profile images
+    takeScreenshot: False           # Take a screenshot of the profile
+    takePartialScreenshot: False    # Take a partial screenshot of the profile
+    updateCrmContacts: False         # Update CRM contacts with profile data
+    emailChooser: none              # Email discovery service by Phantombuster
+    scrapeRecommendations: True     # Extract the profile’s recommendations - received/ given
+    scrapeAccomplishments: True     # Extract the profile’s accomplishments - courses/ projects/ languages/ publications
+    scrapeLicenses: True            # Extract the profile’s licenses and certifications
+    scrapeInterests: True           # Extract the profile’s interests - companies/ groups/ schools
+    onlyCurrentJson: True           # Only save the current JSON data, not the full history
 
 - id: 9136
   name: LinkedIn Activity Extractor.js
   arguments:
-    numberOfLinesPerLaunch: 1
-    numberMaxOfPosts: 50
-    csvName: result
-    activitiesToScrape: ['Post']
+    numberMaxOfPosts: 20            # Number of items to extract per activity type
+    numberOfLinesPerLaunch: 10      # Number of profiles to process per launch
+    csvName: result                 # Name of the CSV file to save results
+    activitiesToScrape: [           # Types of activity to extract for profiles
+      "Post",
+      "Article",
+      "Comment",
+      "Reaction",
+      "Document",
+      "Newsletter",
+      "Event"
+    ]

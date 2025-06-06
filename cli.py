@@ -17,9 +17,38 @@ console = Console()
 pb = PhantomBuster(api_key=os.getenv("PHANTOMBUSTER_API_KEY", ""))
 
 
+def _args_to_dict(args):
+    """Convert a string of key=value pairs to a dictionary."""
+    if not args:
+        return {}
+    return dict(item.split('=') for item in args.split(','))
+
+def _dict_to_default_table(data):
+    """Convert a dictionary to a Rich Table.
+    
+    Args:
+        data (dict): The dictionary to convert.
+        
+    Returns:
+        Table: A Rich Table containing the dictionary data.
+    """
+    table = Table()
+    table.add_column("Key", style="white")
+    table.add_column("Value", style="magenta", width=80)
+    for key, value in data.items():
+        if isinstance(value, dict):
+            value = json.dumps(value, indent=2)
+        elif isinstance(value, list):
+            value = json.dumps(value)
+        table.add_row(key, str(value))
+    return table
+
 @click.group()
 def cli():
     pass
+
+# -------------------------- ORG --------------------------
+# ----------------------------------------------------------
 
 @cli.group()
 def org():
@@ -73,15 +102,7 @@ def agent_list(debug=False):
 @click.option('--debug', '-d', is_flag=True, help='Enable debug mode to print raw agent data.')
 def agent_show(agent_id, debug):
     agent = pb.agent.get(agent_id)
-    table = Table()
-    table.add_column("Key", style="white")
-    table.add_column("Value", style="magenta", width=80)
-    for key, value in agent.items():
-        if isinstance(value, dict):
-            value = json.dumps(value, indent=2)
-        elif isinstance(value, list):
-            value = json.dumps(value)
-        table.add_row(key, str(value))
+    table = _dict_to_default_table(agent)
     console.print(table) if not debug else console.print(agent)
 
 
@@ -132,25 +153,45 @@ def agent_delete(agent_id, debug):
     except Exception as e:
         console.print(f"[X] {e.args[0].get('content').get('error')}", style="red")
 
-@agent.command(name='run')
+@agent.command(name='launch')
 @click.argument('agent_id')
 @click.option('--args', '-a', default='', help='Arguments to pass to the agent. (key1=value1,key2=value2)')
 @click.option('--debug', '-d', default=False, is_flag=True, help='Enable debug mode to print raw agent data.')
 def agent_run(agent_id, args, debug):
     try:
-        arguments = {}
-        if args:
-            for arg in args.split(','):
-                key, value = arg.split('=')
-                arguments[key.strip()] = value.strip()
+        arguments = _args_to_dict(args)
+        if not arguments:
+            console.print("[X] No arguments provided. Use --args to pass arguments in key=value format.", style="red")
+            return
         
-        rsp = pb.agent.run(agent_id, arguments)
+        rsp = pb.agent.launch(agent_id, arguments)
         if not debug:
           console.print(f"[+] Agent {agent_id} launched successfully. (Container {rsp.get('containerId')})", style="green")
         else:
             console.print(rsp)
     except Exception as e:
         console.print(f"[X] {e.args[0].get('content').get('error')}", style="red")
+
+@agent.command(name='launch-and-wait')
+@click.argument('agent_id')
+@click.option('--args', '-a', default='', help='Arguments to pass to the agent. (key1=value1,key2=value2)')
+@click.option('--debug', '-d', default=False, is_flag=True, help='Enable debug mode to print raw agent data.')
+def agent_launch_and_wait(agent_id, args, debug):
+    try:
+        arguments = _args_to_dict(args)
+        if not arguments:
+            console.print("[X] No arguments provided. Use --args to pass arguments in key=value format.", style="red")
+            return
+
+        results = pb.agent.launch_and_wait(agent_id, arguments)
+        if not debug:
+            console.print(f"[+] Agent {agent_id} launched successfully.", style="green")
+            table = _dict_to_default_table(results)
+            console.print(table)
+        else:
+            console.print(results)
+    except Exception as e:
+        console.print(f"[X] {e.args[0]}", style="red")
 
 # ---------------------- SCRIPT COMMANDS ---------------------
 # ------------------------------------------------------------
@@ -199,15 +240,7 @@ def script_list(filter, debug):
 def script_show(script_id, debug):
     script = pb.script.get(script_id)
     if not debug:
-        table = Table()
-        table.add_column("Key", style="white")
-        table.add_column("Value", style="magenta", width=80)
-        for key, value in script.items():
-            if isinstance(value, dict):
-                value = json.dumps(value, indent=2)
-            elif isinstance(value, list):
-                value = json.dumps(value)
-            table.add_row(key, str(value))
+        table = _dict_to_default_table(script)
         console.print(table)
     else:
         console.print(script)
@@ -220,15 +253,7 @@ def script_args(script_id, debug):
     try:
         args = pb.script.args(script_id)
         if not debug:
-            table = Table()
-            table.add_column("Key", style="white")
-            table.add_column("Value", style="magenta", width=80)
-            for key, value in args.items():
-                if isinstance(value, dict):
-                    value = json.dumps(value, indent=2)
-                elif isinstance(value, list):
-                    value = json.dumps(value)
-                table.add_row(key, str(value))
+            table = _dict_to_default_table(args)
             console.print(table)
         else:
             console.print(args)
@@ -255,7 +280,6 @@ def container_list(agent_id, debug):
         table.add_column("Launched", style="white")
         table.add_column("ExitCode", style="white")
         for container in containers:
-            print(container)
             table.add_row(
                 container.get("id", ""),
                 container.get("status", ""),
@@ -273,15 +297,7 @@ def container_list(agent_id, debug):
 def container_show(container_id, debug):
     container = pb.container.get(container_id)
     if not debug:
-        table = Table()
-        table.add_column("Key", style="white")
-        table.add_column("Value", style="magenta", width=80)
-        for key, value in container.items():
-            if isinstance(value, dict):
-                value = json.dumps(value, indent=2)
-            elif isinstance(value, list):
-                value = json.dumps(value)
-            table.add_row(key, str(value))
+        table = _dict_to_default_table(container)
         console.print(table)
     else:
         console.print(container)
@@ -292,12 +308,7 @@ def container_show(container_id, debug):
 def container_results(container_id, debug):
     results = pb.container.results(container_id)
     if not debug:
-        table = Table()
-        table.add_column("Key", style="white")
-        table.add_column("Value", style="magenta", width=80, overflow="fold")
-        for key, value in results.items():
-            value = yaml.dump(value, allow_unicode=True, default_flow_style=False, width=1000)
-            table.add_row(key.capitalize(), str(value))
+        table = _dict_to_default_table(results)
         console.print(table)
     else:
         console.print(results)
@@ -318,6 +329,20 @@ def container_output(container_id, debug):
     else:
         console.print({output})
 
+@container.command(name='wait')
+@click.argument('container_id')
+@click.option('--debug', '-d', default=False, is_flag=True, help='Enable debug mode to print raw container data.')
+def container_wait(container_id, debug):
+    try:
+        container = pb.container.wait(container_id)
+
+        if not debug:
+            table = _dict_to_default_table(container)
+            console.print(table)
+        else:
+            console.print(container)
+    except Exception as e:
+        console.print(f"[X] {e.args[0].get('content').get('error')}", style="red")
 
 if __name__ == "__main__":
     cli()
