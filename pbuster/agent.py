@@ -131,6 +131,27 @@ class Agent(object):
         
         return container
 
+    def wait(self, agent_id):
+        """Wait for a specific agent to finish execution
+        
+        Args:
+            agent_id (str): Agent ID to wait for
+        
+        Returns:
+            (dict): A dictionary containing the agent's output after it has finished executing.
+        """
+        pb_container = Container(self.req)
+
+        # Get latest running container for the agent
+        containers = pb_container.list(agent_id)
+        running_containers = [c for c in containers if c['status'] == 'running']
+        if not running_containers:
+            raise ValueError(f"No running containers found for agent {agent_id}.")
+        if len(running_containers) > 1:
+            raise ValueError(f"Multiple running containers found for agent {agent_id}. Please specify the container ID.")
+        
+        return pb_container.wait(running_containers[0]['id'])
+
     def create(self, script_name, agent_name=None, org_name="phantombuster", arguments={}):
         """Create a new agent
         

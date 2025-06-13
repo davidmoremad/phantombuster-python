@@ -193,6 +193,20 @@ def agent_launch_and_wait(agent_id, args, debug):
     except Exception as e:
         console.print(f"[X] {e.args[0]}", style="red")
 
+@agent.command(name='wait')
+@click.argument('agent_id')
+@click.option('--debug', '-d', default=False, is_flag=True, help='Enable debug mode to print raw agent data.')
+def agent_wait(agent_id, debug):
+    try:
+        agent = pb.agent.wait(agent_id)
+        if not debug:
+            table = _dict_to_default_table(agent)
+            console.print(table)
+        else:
+            console.print(agent)
+    except Exception as e:
+        console.print(f"[X] {e.args[0]}", style="red")
+
 # ---------------------- SCRIPT COMMANDS ---------------------
 # ------------------------------------------------------------
 
