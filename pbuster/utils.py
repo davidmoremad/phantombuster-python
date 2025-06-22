@@ -23,7 +23,7 @@ def script_settings_loader(script_id):
                 return script
         return {}
     except FileNotFoundError:
-        raise FileNotFoundError("Configuration file 'phantombuster/config/scripts.yaml' not found.")
+        raise FileNotFoundError(f"Configuration file {config_path} not found.")
 
 
 class RequestHandler(object):

@@ -20,6 +20,8 @@
 
 - id: 9136
   name: LinkedIn Activity Extractor.js
+  required:
+    - spreadsheetUrl
   arguments:
     numberMaxOfPosts: 20            # Number of items to extract per activity type
     numberOfLinesPerLaunch: 10      # Number of profiles to process per launch
@@ -33,3 +35,25 @@
       "Newsletter",
       "Event"
     ]
+
+- id: 4485
+  name: Twitter Profile URL Finder.js
+  required:
+    - spreadsheetUrl
+  arguments:
+    market: es-ES                    # Choose which market to search for profiles in
+
+- id: 9375
+  name: Twitter Profile Scraper.js
+  required:
+    - spreadsheetUrl
+  arguments:
+    numberProfilesPerLaunch: 60 
+    
+- id: 30442
+  name: Twitter Tweet Extractor.js
+  required:
+    - spreadsheetUrl
+  arguments:
+    feedType: tweets-replies         # Type of feed to extract tweets from
+    numberOfTweetsPerProfile: 100    # Number of tweets to extract per profile (Verified acc up to 10.000 posts/day, Unverified up to 1000posts/day, new accounts up to 500posts/day)

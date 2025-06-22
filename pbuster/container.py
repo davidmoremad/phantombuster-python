@@ -88,7 +88,6 @@ class Container(object):
         # [!] Checking exitCode instead of status because
         #     it changes to 'finished' before the container is actually done.
         while exitCode is None or status == "running":
-            print(f"Waiting container {container_id}. Exit code: {exitCode}, Status: {status}")
             container = self.get(container_id)
             exitCode = container.get('exitCode')
             status = container.get('status')

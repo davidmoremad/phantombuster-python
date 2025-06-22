@@ -10,6 +10,7 @@ class Agent(object):
     AGENT = "agents/fetch?id={}"
     AGENT_OUTPUT = "agents/fetch-output?id={}"
     AGENT_LAUNCH = "agents/launch"
+    AGENT_STOP = "agents/stop"
     AGENT_SAVE = "agents/save"
     AGENT_DELETE = "agents/delete"
 
@@ -94,7 +95,7 @@ class Agent(object):
 
         # Ensure sessionCookie is set, either from arguments or environment variable
         if 'sessionCookie' not in payload['arguments']:
-            payload['arguments']['sessionCookie'] = os.getenv('PHANTOMBUSTER_COOKIE')
+            payload['arguments']['sessionCookie'] = os.getenv('PHANTOMBUSTER_LINKEDIN_COOKIE')
 
         # Raise exception if required_args are missing.
         if not set(script_settings.get('required', [])).issubset(payload['arguments'].keys()):
@@ -172,6 +173,17 @@ class Agent(object):
 
         return self.req.post(self.AGENT_SAVE, payload=payload)
 
+    def stop(self, agent_id):
+        """Stop a specific agent by ID
+        
+        Args:
+            agent_id (str): Agent ID to stop
+        
+        Returns:
+            (dict): A dictionary containing the response from the stop request.
+        """
+        return self.req.post(self.AGENT_STOP, payload={'id': agent_id, 'stop': True})
+
     def delete(self, agent_id):
         """Delete a specific agent by ID
         
@@ -181,4 +193,5 @@ class Agent(object):
         Returns:
             (dict): A dictionary containing the response from the delete request.
         """
-        return self.req.post(self.AGENT_DELETE, payload={'id': agent_id})
+        softAbort = True
+        return self.req.post(self.AGENT_DELETE, payload={'id': agent_id, 'softAbort': softAbort})
