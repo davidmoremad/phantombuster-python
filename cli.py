@@ -1,8 +1,6 @@
 import os
 import json
-import yaml
 import click
-import functools
 from datetime import datetime
 from rich.console import Console
 from rich.table import Table
@@ -139,6 +137,19 @@ def agent_create(script, name, org, args, debug):
             console.print(f"[X] Script not found. Must include extension name.", style="red")
         else:
             console.print(f"[X] {err}", style="red")
+
+@agent.command(name='stop')
+@click.argument('agent_id')
+@click.option('--debug', '-d', default=False, is_flag=True, help='Enable debug mode to print raw agent data.')
+def agent_stop(agent_id, debug):
+    try:
+        rsp = pb.agent.stop(agent_id)
+        if not debug:
+            console.print(f"[+] Stopped agent {agent_id}.", style="green")
+        else:
+            console.print(rsp)
+    except Exception as e:
+        console.print(f"[X] {e.args[0].get('content').get('error')}", style="red")
 
 @agent.command(name='delete')
 @click.argument('agent_id')
